@@ -1,4 +1,5 @@
 import React from "react";
+import QRCode from "qrcode";
 
 export type TicketTheme = "crimson" | "white";
 
@@ -602,7 +603,7 @@ export function CPLShieldCrest({
   );
 }
 
-// Vector QR Code Generator Pattern
+// Real Camera-Scannable Vector QR Code Generator
 export function SVGQRCode({
   value,
   className = "w-10 h-10 sm:w-14 sm:h-14",
@@ -610,112 +611,46 @@ export function SVGQRCode({
   value: string;
   className?: string;
 }) {
-  // Deterministic seed pattern based on value string
-  const hash = value
-    .split("")
-    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const [svgString, setSvgString] = React.useState<string>("");
 
-  const cells = [
-    [10, 2],
-    [12, 2],
-    [14, 2],
-    [16, 2],
-    [10, 4],
-    [14, 4],
-    [16, 4],
-    [2, 10],
-    [4, 10],
-    [6, 10],
-    [8, 10],
-    [10, 10],
-    [12, 10],
-    [14, 10],
-    [16, 10],
-    [18, 10],
-    [20, 10],
-    [24, 10],
-    [26, 10],
-    [2, 12],
-    [6, 12],
-    [10, 12],
-    [14, 12],
-    [18, 12],
-    [22, 12],
-    [26, 12],
-    [2, 14],
-    [4, 14],
-    [8, 14],
-    [12, 14],
-    [16, 14],
-    [20, 14],
-    [24, 14],
-    [2, 16],
-    [6, 16],
-    [10, 16],
-    [14, 16],
-    [18, 16],
-    [22, 16],
-    [26, 16],
-    [10, 18],
-    [12, 18],
-    [16, 18],
-    [20, 18],
-    [24, 18],
-    [26, 18],
-    [10, 20],
-    [14, 20],
-    [16, 20],
-    [18, 20],
-    [22, 20],
-    [24, 20],
-    [10, 22],
-    [12, 22],
-    [16, 22],
-    [18, 22],
-    [20, 22],
-    [24, 22],
-    [26, 22],
-    [10, 24],
-    [14, 24],
-    [18, 24],
-    [22, 24],
-    [26, 24],
-    [10, 26],
-    [12, 26],
-    [14, 26],
-    [16, 26],
-    [20, 26],
-    [22, 26],
-    [24, 26],
-  ];
+  React.useEffect(() => {
+    if (!value) return;
+    QRCode.toString(
+      value,
+      {
+        type: "svg",
+        margin: 1,
+        color: {
+          dark: "#000000",
+          light: "#ffffff",
+        },
+      },
+      (err, str) => {
+        if (!err && str) {
+          // Ensure svg is responsive
+          const responsiveSvg = str.replace(
+            /<svg([^>]*)>/,
+            '<svg$1 style="width:100%;height:100%;display:block;">',
+          );
+          setSvgString(responsiveSvg);
+        }
+      },
+    );
+  }, [value]);
+
+  if (!svgString) {
+    return (
+      <div className={`flex items-center justify-center ${className}`}>
+        <div className="w-6 h-6 border-2 border-[#005B8C] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
-    <svg viewBox="0 0 29 29" className={className}>
-      {/* Background */}
-      <rect width="29" height="29" fill="#ffffff" />
-      {/* Top-Left Finder */}
-      <rect x="2" y="2" width="7" height="7" fill="#000000" />
-      <rect x="3" y="3" width="5" height="5" fill="#ffffff" />
-      <rect x="4" y="4" width="3" height="3" fill="#000000" />
-
-      {/* Top-Right Finder */}
-      <rect x="20" y="2" width="7" height="7" fill="#000000" />
-      <rect x="21" y="3" width="5" height="5" fill="#ffffff" />
-      <rect x="22" y="4" width="3" height="3" fill="#000000" />
-
-      {/* Bottom-Left Finder */}
-      <rect x="2" y="20" width="7" height="7" fill="#000000" />
-      <rect x="3" y="21" width="5" height="5" fill="#ffffff" />
-      <rect x="4" y="22" width="3" height="3" fill="#000000" />
-
-      {/* Dynamic Data Cells Grid */}
-      <g fill="#000000">
-        {cells.map(([x, y], idx) => {
-          const actualX = (x + (hash % 2 === 0 ? 0 : 0)) % 28;
-          return <rect key={idx} x={actualX} y={y} width="1.2" height="1.2" />;
-        })}
-      </g>
-    </svg>
+    <div
+      className={`flex items-center justify-center overflow-hidden ${className}`}
+      dangerouslySetInnerHTML={{ __html: svgString }}
+    />
   );
 }
 

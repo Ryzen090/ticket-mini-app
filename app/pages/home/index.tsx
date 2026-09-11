@@ -4,6 +4,7 @@ import React from "react";
 import { GET_TICKET } from "@/app/service/ticket";
 import TicketModal from "@/app/components/ticket/TicketModal";
 import CPLMatchTicket from "@/app/components/ticket/CPLMatchTicket";
+import AbaPaymentModal from "@/app/components/ticket/AbaPaymentModal";
 
 export enum TicketStatus {
   Out = 1,
@@ -45,6 +46,7 @@ export default function HomePage() {
   const [showTicketModal, setShowTicketModal] = React.useState<boolean>(false);
   const [showCheckoutModal, setShowCheckoutModal] =
     React.useState<boolean>(false);
+  const [showAbaModal, setShowAbaModal] = React.useState<boolean>(false);
   const [quantity, setQuantity] = React.useState<number>(1);
   const [bookingSuccess, setBookingSuccess] = React.useState<boolean>(false);
 
@@ -139,7 +141,7 @@ export default function HomePage() {
 
   const handleBookTickets = () => {
     if (!activeZone || !isAvailable) return;
-    setBookingSuccess(true);
+    setShowAbaModal(true);
   };
 
   return (
@@ -2190,6 +2192,21 @@ export default function HomePage() {
           isOpen={showTicketModal}
           onClose={() => setShowTicketModal(false)}
           zone={tickets[0]}
+          quantity={quantity}
+        />
+      )}
+
+      {activeZone && (
+        <AbaPaymentModal
+          isOpen={showAbaModal}
+          onClose={() => setShowAbaModal(false)}
+          onPaymentSuccess={() => {
+            setShowAbaModal(false);
+            setBookingSuccess(true);
+          }}
+          amountUsd={activeZone.price * quantity}
+          zoneId={activeZone.id}
+          zoneName={activeZone.name}
           quantity={quantity}
         />
       )}

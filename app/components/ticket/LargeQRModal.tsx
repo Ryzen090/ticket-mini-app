@@ -260,12 +260,9 @@ export const LargeQRModal: React.FC<LargeQRModalProps> = ({
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
                   <span>
                     {isGroupMode
-                      ? `GROUP PASS (${totalQuantity} PERSONS)`
+                      ? `GROUP PASS`
                       : `MATCH PASS • ${currentTicket.seat}`}
                   </span>
-                </span>
-                <span className="font-mono text-slate-600">
-                  {displayedPassId}
                 </span>
               </div>
             </div>
