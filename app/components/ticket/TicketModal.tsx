@@ -95,9 +95,6 @@ export const TicketModal: React.FC<TicketModalProps> = ({
           {/* Modal Header */}
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4 relative z-10">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-400 font-bold text-lg">
-                🎟️
-              </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-xl sm:text-2xl font-bold uppercase tracking-wide text-white">

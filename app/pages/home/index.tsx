@@ -195,20 +195,16 @@ export default function HomePage() {
                   <button
                     type="button"
                     onClick={() => setShowTicketModal(true)}
-                    className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-600/30 to-red-600/20 hover:from-red-600 hover:to-red-500 text-red-300 hover:text-white border border-red-500/50 text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-red-600/30 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white border border-red-500/40 text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-lg shadow-red-950/50 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
                   >
-                    <span>Show Ticket</span>
+                    Show Ticket
                   </button>
                 </div>
               </>
             ) : (
-              <div className="w-full text-center py-2 text-slate-300 text-sm flex items-center justify-center gap-2 font-medium">
-                <span className="inline-block animate-bounce text-base">
-                  👇
-                </span>
+              <div className="w-full text-center py-2 text-slate-300 text-sm flex items-center justify-center font-medium tracking-wide">
                 <span>
-                  Click any stadium stand on the interactive 3D map to view zone
-                  details & reserve tickets
+                  Select any stadium stand on the interactive map to view zone details and reserve tickets
                 </span>
               </div>
             )}
@@ -1890,10 +1886,22 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={() => setShowCheckoutModal(false)}
-                className="w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors border border-slate-700"
+                className="w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors border border-slate-700 cursor-pointer"
                 aria-label="Close"
               >
-                ✕
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
               </button>
             </div>
 
