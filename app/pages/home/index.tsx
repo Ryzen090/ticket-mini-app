@@ -1,9 +1,9 @@
 "use client";
 
-import CPLMatchTicket from "@/app/components/ticket/CPLMatchTicket";
-import TicketModal from "@/app/components/ticket/TicketModal";
-import { GET_TICKET } from "@/app/service/ticket";
 import React from "react";
+import { GET_TICKET } from "@/app/service/ticket";
+import TicketModal from "@/app/components/ticket/TicketModal";
+import CPLMatchTicket from "@/app/components/ticket/CPLMatchTicket";
 
 export enum TicketStatus {
   Out = 1,
@@ -61,6 +61,17 @@ export default function HomePage() {
     };
 
     fetchTickets();
+  }, []);
+
+  React.useEffect(() => {
+    const handleOpenModal = () => {
+      setShowTicketModal(true);
+    };
+
+    window.addEventListener("open-ticket-modal", handleOpenModal);
+    return () => {
+      window.removeEventListener("open-ticket-modal", handleOpenModal);
+    };
   }, []);
 
   const activeZone = tickets.find((z) => z.id === selectedSection);
@@ -129,23 +140,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#040d1a] text-slate-100 flex flex-col">
-      <section className="bg-linear-to-b from-[#061224] to-[#040d1a] border-b border-slate-800/80 px-4 sm:px-8 pt-8 pb-6">
-        <div className="max-w-360 mx-auto">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setShowTicketModal(true)}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-linear-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white font-bold uppercase text-xs tracking-wider shadow-lg shadow-red-950/50 border border-red-400/30 transition-all hover:scale-105"
-              >
-                <span className="text-base">🎟️</span>
-                <span>View CPL Match Ticket</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <div className="flex-1 max-w-360 w-full mx-auto px-4 sm:px-8 py-8">
         <div className="lg:col-span-8 bg-[#061224] rounded-2xl border border-slate-800 p-4 sm:p-8 flex flex-col items-center justify-center shadow-dark relative overflow-hidden">
           <div className="w-full p-4 rounded-xl bg-slate-900/90 border border-slate-700/80 flex flex-wrap items-center justify-between gap-4 shadow-lg backdrop-blur">
@@ -1725,88 +1719,88 @@ export default function HomePage() {
                   d="M340.84 181.039H180.129V284.827H340.84V181.039Z"
                   fill="#131313"
                   stroke="white"
-                  stroke-width="0.517158"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="0.517158"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 ></path>
                 <path
                   d="M260.494 284.827V181.066"
                   stroke="white"
-                  stroke-width="0.517158"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="0.517158"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 ></path>
                 <path
                   d="M260.496 247.124C268.285 247.124 274.599 240.83 274.599 233.065C274.599 225.3 268.285 219.006 260.496 219.006C252.707 219.006 246.393 225.3 246.393 233.065C246.393 240.83 252.707 247.124 260.496 247.124Z"
                   fill="#131313"
                   stroke="white"
-                  stroke-width="0.517158"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="0.517158"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 ></path>
                 <path
                   d="M315.909 222.223C314.304 223.543 313.011 225.2 312.124 227.076C311.236 228.952 310.776 231.001 310.776 233.075C310.776 235.149 311.236 237.198 312.124 239.074C313.011 240.95 314.304 242.607 315.909 243.927"
                   fill="#131313"
                   stroke="white"
-                  stroke-width="0.517158"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="0.517158"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 ></path>
                 <path
                   d="M340.842 202.196H315.917V263.779H340.842V202.196Z"
                   fill="#131313"
                   stroke="white"
-                  stroke-width="0.517158"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="0.517158"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 ></path>
                 <path
                   d="M340.811 219.026H332.824V246.935H340.811V219.026Z"
                   fill="#131313"
                   stroke="white"
-                  stroke-width="0.517158"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="0.517158"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 ></path>
                 <path
                   d="M205.045 243.718C206.652 242.399 207.947 240.742 208.835 238.866C209.724 236.99 210.185 234.941 210.185 232.866C210.185 230.791 209.724 228.741 208.835 226.865C207.947 224.989 206.652 223.332 205.045 222.014"
                   fill="#131313"
                   stroke="white"
-                  stroke-width="0.517158"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="0.517158"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 ></path>
                 <path
                   d="M205.053 202.196H180.129V263.779H205.053V202.196Z"
                   fill="#131313"
                   stroke="white"
-                  stroke-width="0.517158"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="0.517158"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 ></path>
                 <path
                   d="M188.143 219.006H180.156V246.915H188.143V219.006Z"
                   fill="#131313"
                   stroke="white"
-                  stroke-width="0.517158"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="0.517158"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 ></path>
                 <path
                   d="M260.496 233.274C260.657 233.274 260.788 233.144 260.788 232.984C260.788 232.823 260.657 232.693 260.496 232.693C260.335 232.693 260.205 232.823 260.205 232.984C260.205 233.144 260.335 233.274 260.496 233.274Z"
                   stroke="white"
-                  stroke-width="0.517158"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="0.517158"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 ></path>
                 <g>
                   <path d="M340.834 182.344C340.493 182.342 340.167 182.206 339.927 181.965C339.687 181.724 339.552 181.399 339.552 181.059"></path>
                   <path
                     d="M340.834 182.344C340.493 182.342 340.167 182.206 339.927 181.965C339.687 181.724 339.552 181.399 339.552 181.059"
                     stroke="white"
-                    stroke-width="0.517158"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="0.517158"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   ></path>
                 </g>
                 <g>
@@ -1814,9 +1808,9 @@ export default function HomePage() {
                   <path
                     d="M339.552 284.807C339.552 284.467 339.687 284.142 339.927 283.901C340.167 283.661 340.493 283.524 340.834 283.523"
                     stroke="white"
-                    stroke-width="0.517158"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="0.517158"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   ></path>
                 </g>
                 <g>
@@ -1824,9 +1818,9 @@ export default function HomePage() {
                   <path
                     d="M180.119 182.344C180.461 182.344 180.788 182.208 181.03 181.967C181.271 181.727 181.407 181.4 181.407 181.059"
                     stroke="white"
-                    stroke-width="0.517158"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="0.517158"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   ></path>
                 </g>
                 <g>
@@ -1834,9 +1828,9 @@ export default function HomePage() {
                   <path
                     d="M181.438 284.807C181.438 284.466 181.302 284.14 181.06 283.899C180.819 283.658 180.491 283.523 180.15 283.523"
                     stroke="white"
-                    stroke-width="0.517158"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="0.517158"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   ></path>
                 </g>
               </g>
@@ -1846,16 +1840,16 @@ export default function HomePage() {
       </div>
 
       {showCheckoutModal && activeZone && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto no-scrollbar animate-in fade-in duration-200">
           <div
             className="fixed inset-0"
             onClick={() => setShowCheckoutModal(false)}
           />
 
           <div className="relative z-10 max-w-4xl w-full bg-[#071326] border border-slate-700/80 rounded-3xl p-5 sm:p-8 shadow-2xl space-y-6 text-white my-auto overflow-hidden">
-            {/* Ambient glow */}
-            <div className="absolute top-0 right-1/4 w-96 h-96 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+            {/* Glow ambient effects behind modal */}
+            <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
 
             {/* Dialog Header */}
             <div className="flex items-center justify-between border-b border-slate-800 pb-4 relative z-10">
@@ -1887,7 +1881,7 @@ export default function HomePage() {
             {!bookingSuccess ? (
               <>
                 {/* Official Matchday Ticket Presentation */}
-                <div className="overflow-x-auto relative z-10">
+                <div className="overflow-x-auto no-scrollbar relative z-10">
                   <div className="min-w-[620px] max-w-[860px] mx-auto">
                     <CPLMatchTicket
                       zoneId={activeZone.id}
@@ -2039,9 +2033,9 @@ export default function HomePage() {
               /* Reservation Confirmation State */
               <div className="space-y-5 relative z-10">
                 {/* All Reserved Ticket Passes Display */}
-                <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
+                <div className="space-y-4 max-h-[500px] overflow-y-auto no-scrollbar pr-1">
                   {Array.from({ length: quantity }).map((_, idx) => (
-                    <div key={idx} className="overflow-x-auto py-1 space-y-1.5">
+                    <div key={idx} className="overflow-x-auto no-scrollbar py-1 space-y-1.5">
                       {quantity > 1 && (
                         <div className="flex items-center justify-between px-2 text-xs text-slate-400">
                           <span className="font-bold text-white uppercase flex items-center gap-1.5">

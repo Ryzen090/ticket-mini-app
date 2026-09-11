@@ -1,14 +1,6 @@
 const API_URL_BACKEND =
   process.env.API_URL_BACKEND || "http://localhost:9000/api/v1/";
 
-/**
- * Fetch data from the given endpoint.
- * Handles errors and JSON parsing automatically.
- * @param {string} endpoint - The API endpoint to fetch data from.
- * @param {RequestInit} [options] - Optional fetch options (e.g., headers, method, body).
- * @returns {Promise<any>} - The JSON response data.
- * @throws Will throw an error if the request fails.
- */
 export const FETCH_API = async (
   endpoint: string,
   options: RequestInit = {},

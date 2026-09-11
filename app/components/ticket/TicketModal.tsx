@@ -1,6 +1,12 @@
 import React from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Keyboard, A11y } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
 import { CPLMatchTicket, TicketTheme } from "./CPLMatchTicket";
 import { LargeQRModal } from "./LargeQRModal";
+
+import "swiper/css";
+import "swiper/css/pagination";
 
 interface TicketModalProps {
   isOpen: boolean;
@@ -28,6 +34,19 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const [copied, setCopied] = React.useState<boolean>(false);
   const [showLargeQr, setShowLargeQr] = React.useState<boolean>(false);
   const [groupQrMode, setGroupQrMode] = React.useState<boolean>(false);
+  const swiperRef = React.useRef<SwiperType | null>(null);
+
+  const ticketCount = Math.max(quantity, 3);
+
+  // Reset index when modal opens
+  React.useEffect(() => {
+    if (isOpen) {
+      setCurrentTicketIndex(0);
+      if (swiperRef.current) {
+        swiperRef.current.slideTo(0);
+      }
+    }
+  }, [isOpen]);
 
   if (!isOpen || !zone) return null;
 
@@ -63,7 +82,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto no-scrollbar bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
         {/* Backdrop click to dismiss */}
         <div className="fixed inset-0" onClick={onClose} />
 
@@ -87,11 +106,6 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                     Verified Pass
                   </span>
-                  {quantity > 1 && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                      {quantity} Tickets
-                    </span>
-                  )}
                 </div>
                 <p className="text-xs text-slate-400">
                   Cambodian Premier League Season 2026/27 • Stand {zone.id} (
@@ -100,7 +114,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
               </div>
             </div>
 
-            {/* Action Controls in Header: QR Zoom, Group Pass, Theme Picker & Close */}
+            {/* Action Controls in Header */}
             <div className="flex flex-wrap items-center gap-2.5">
               {/* Theme Toggle (Crimson Red / White Silver) */}
               <div className="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-700 text-xs">
@@ -134,7 +148,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors border border-slate-700"
+                className="w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors border border-slate-700 cursor-pointer"
                 aria-label="Close"
               >
                 <svg
@@ -154,25 +168,63 @@ export const TicketModal: React.FC<TicketModalProps> = ({
             </div>
           </div>
 
-          {/* Dual 3D Stack / Perspective Preview Presentation or Single Ticket */}
-          <div className="py-2 relative z-10 flex flex-col items-center justify-center">
-            {/* Main Ticket Display */}
-            <div className="w-full overflow-x-auto pb-4 pt-2 flex justify-center">
-              <div className="min-w-[640px] max-w-[920px] w-full transform transition-transform duration-300">
-                <CPLMatchTicket
-                  zoneId={zone.id}
-                  zoneName={zone.name}
-                  priceUsd={zone.price}
-                  category={categoryName}
-                  stand={`Stand ${zone.id}`}
-                  gate={gateNumber}
-                  seat={currentSeat}
-                  ticketNumber={currentTicketNum}
-                  theme={selectedTheme}
-                  onQrClick={handleOpenSingleQr}
-                />
-              </div>
-            </div>
+          {/* Swiper Tickets Carousel */}
+          <div className="py-2 relative z-10">
+            <style>{`
+              .ticket-swiper .swiper-pagination-bullet {
+                background: #94a3b8;
+                opacity: 0.5;
+                transition: all 0.3s ease;
+              }
+              .ticket-swiper .swiper-pagination-bullet-active {
+                background: #ef4444;
+                opacity: 1;
+                width: 24px;
+                border-radius: 9999px;
+              }
+            `}</style>
+
+            <Swiper
+              modules={[Pagination, Keyboard, A11y]}
+              spaceBetween={24}
+              slidesPerView={1.05}
+              grabCursor={true}
+              pagination={{ clickable: true }}
+              keyboard={{ enabled: true }}
+              onSwiper={(swiper) => {
+                swiperRef.current = swiper;
+              }}
+              onSlideChange={(swiper) => {
+                setCurrentTicketIndex(swiper.activeIndex);
+              }}
+              className="ticket-swiper pb-10"
+            >
+              {Array.from({ length: ticketCount }).map((_, idx) => {
+                const itemSeat = `S-${14 + idx * 2}`;
+                const itemTicketNum = `CPL-2026-${(884920 + idx * 137).toString()}`;
+
+                return (
+                  <SwiperSlide key={idx}>
+                    <div className="w-full overflow-x-auto no-scrollbar pb-4 pt-2 flex justify-center">
+                      <div className="min-w-[640px] max-w-[920px] w-full transform transition-transform duration-300">
+                        <CPLMatchTicket
+                          zoneId={zone.id}
+                          zoneName={zone.name}
+                          priceUsd={zone.price}
+                          category={categoryName}
+                          stand={`Stand ${zone.id}`}
+                          gate={gateNumber}
+                          seat={itemSeat}
+                          ticketNumber={itemTicketNum}
+                          theme={selectedTheme}
+                          onQrClick={handleOpenSingleQr}
+                        />
+                      </div>
+                    </div>
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
           </div>
 
           {/* Action Footer Bar */}
@@ -182,18 +234,13 @@ export const TicketModal: React.FC<TicketModalProps> = ({
               <code className="px-2 py-0.5 rounded bg-slate-900 text-slate-200 border border-slate-700 font-mono">
                 {currentTicketNum}
               </code>
-              <button
-                type="button"
-                onClick={handleCopyCode}
-                className="text-xs text-blue-400 hover:text-blue-300 underline underline-offset-2 ml-1"
-              ></button>
             </div>
 
             <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={handleOpenSingleQr}
-                className="px-4 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Scan</span>
               </button>
@@ -201,7 +248,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-bold uppercase text-xs tracking-wider transition-all shadow-lg shadow-red-950/40"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-bold uppercase text-xs tracking-wider transition-all shadow-lg shadow-red-950/40 cursor-pointer"
               >
                 Done & Close
               </button>

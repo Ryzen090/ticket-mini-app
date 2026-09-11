@@ -4,7 +4,11 @@ import Link from "next/link";
 import React from "react";
 import MyImage from "../../image";
 
-export default function Header() {
+interface HeaderProps {
+  onGetTickets?: () => void;
+}
+
+export default function Header({ onGetTickets }: HeaderProps = {}) {
   const [isScrolled, setIsScrolled] = React.useState(false);
 
   React.useEffect(() => {
@@ -15,6 +19,15 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleGetTicketsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onGetTickets) {
+      onGetTickets();
+    } else {
+      window.dispatchEvent(new CustomEvent("open-ticket-modal"));
+    }
+  };
 
   return (
     <header
@@ -42,12 +55,13 @@ export default function Header() {
             </div>
           </Link>
 
-          <Link
-            href="/"
-            className="bg-emerald-500 hover:bg-emerald-400 text-white px-4 sm:px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold uppercase tracking-wide transition shadow-lg"
+          <button
+            type="button"
+            onClick={handleGetTicketsClick}
+            className="bg-emerald-500 hover:bg-emerald-400 text-white px-4 sm:px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold uppercase tracking-wide transition shadow-lg cursor-pointer"
           >
             Get Tickets
-          </Link>
+          </button>
         </nav>
       </div>
     </header>
