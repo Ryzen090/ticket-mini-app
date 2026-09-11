@@ -52,7 +52,8 @@ export default function HomePage() {
     const fetchTickets = async () => {
       try {
         const res = await GET_TICKET({ limit: 100 });
-        if (res && res.data && res.data.items) {
+
+        if (res?.data?.items) {
           setTickets(res.data.items);
         }
       } catch (err) {
@@ -61,6 +62,9 @@ export default function HomePage() {
     };
 
     fetchTickets();
+
+    const interval = setInterval(fetchTickets, 60 * 100);
+    return () => clearInterval(interval);
   }, []);
 
   React.useEffect(() => {
@@ -204,7 +208,8 @@ export default function HomePage() {
             ) : (
               <div className="w-full text-center py-2 text-slate-300 text-sm flex items-center justify-center font-medium tracking-wide">
                 <span>
-                  Select any stadium stand on the interactive map to view zone details and reserve tickets
+                  Select any stadium stand on the interactive map to view zone
+                  details and reserve tickets
                 </span>
               </div>
             )}
@@ -1995,54 +2000,97 @@ export default function HomePage() {
                     })()}
 
                     {/* Pricing Summary & Checkout Button */}
-                    <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 flex flex-col justify-between">
-                      <div className="space-y-1.5 text-xs">
-                        <div className="flex justify-between text-slate-400">
-                          <span>Price per Ticket:</span>
-                          <span className="text-slate-200 font-semibold">
-                            ${activeZone.price} (
-                            {(activeZone.price * 4000).toLocaleString()} ៛)
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-slate-400">
-                          <span>Quantity:</span>
-                          <span className="text-slate-200 font-semibold">
-                            {quantity}x
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-slate-400">
-                          <span>Booking Fee:</span>
-                          <span className="text-emerald-400 font-semibold">
-                            FREE
-                          </span>
-                        </div>
-                        <div className="flex justify-between pt-2 border-t border-slate-800 text-sm text-white">
-                          <span>Total Amount:</span>
-                          <span className="text-emerald-400 text-lg font-extrabold">
-                            ${(activeZone.price * quantity).toFixed(2)}{" "}
-                            <span className="text-xs text-slate-300 font-sans font-normal">
-                              (
-                              {(
-                                activeZone.price *
-                                quantity *
-                                4000
-                              ).toLocaleString()}{" "}
-                              ៛)
-                            </span>
-                          </span>
-                        </div>
+                    <div className="relative w-full overflow-hidden rounded-3xl bg-slate-900/60 p-6 backdrop-blur-xl border border-white/10 shadow-2xl">
+                      {/* Subtle background glow effect */}
+                      <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"></div>
+
+                      {/* Header */}
+                      <div className="mb-5 flex items-center gap-2 text-sm font-medium text-slate-200">
+                        Order Summary
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={handleBookTickets}
-                        className="w-full py-3.5 rounded-xl uppercase tracking-wider text-white text-xs bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-lg shadow-emerald-950/50 transition-all duration-200 flex items-center justify-center gap-2"
-                      >
-                        <span>
-                          Reserve {quantity}{" "}
-                          {quantity === 1 ? "Ticket" : "Tickets"}
-                        </span>
-                      </button>
+                      <div className="space-y-3.5">
+                        {/* Line Items */}
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-slate-400">
+                            Price per Ticket
+                          </span>
+                          <div className="text-right">
+                            <span className="font-semibold text-slate-100">
+                              ${activeZone.price}
+                            </span>
+                            <span className="ml-1 text-xs text-slate-500">
+                              ({(activeZone.price * 4000).toLocaleString()} ៛)
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-slate-400">Quantity</span>
+                          <span className="flex h-6 min-w-[24px] items-center justify-center rounded-md bg-white/10 px-2 text-xs font-bold text-white">
+                            {quantity}
+                          </span>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="my-4 h-px w-full bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+
+                        {/* Total Section */}
+                        <div className="mb-6 flex items-end justify-between">
+                          <div>
+                            <p className="mb-1 text-xs font-medium uppercase tracking-wider text-slate-500">
+                              Total Due
+                            </p>
+                            <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+                              ${(activeZone.price * quantity).toFixed(2)}
+                            </p>
+                          </div>
+                          <div className="text-right text-sm font-medium text-emerald-400/80">
+                            {(
+                              activeZone.price *
+                              quantity *
+                              4000
+                            ).toLocaleString()}{" "}
+                            ៛
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={handleBookTickets}
+                          className="group relative flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-500 py-4 text-sm font-bold text-slate-950 transition-all duration-300 hover:bg-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] active:scale-[0.98]"
+                        >
+                          <span>Pay Now</span>
+                          <svg
+                            className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M14 5l7 7m0 0l-7 7m7-7H3"
+                            />
+                          </svg>
+                        </button>
+
+                        <div className="mt-4 flex items-center justify-center gap-1.5 text-[11px] font-medium text-slate-500">
+                          <svg
+                            className="h-3.5 w-3.5 text-emerald-500/70"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                          </svg>
+                          <span>Secured via ABA Pay</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ) : (
