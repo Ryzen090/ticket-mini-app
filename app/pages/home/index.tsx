@@ -139,57 +139,76 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#040d1a] text-slate-100 flex flex-col">
-      <div className="flex-1 max-w-360 w-full mx-auto px-4 sm:px-8 py-8">
-        <div className="lg:col-span-8 bg-[#061224] rounded-2xl border border-slate-800 p-4 sm:p-8 flex flex-col items-center justify-center shadow-dark relative overflow-hidden">
-          <div className="w-full p-4 rounded-xl bg-slate-900/90 border border-slate-700/80 flex flex-wrap items-center justify-between gap-4 shadow-lg backdrop-blur">
+    <div className="min-h-screen bg-transparent text-slate-100 flex flex-col relative overflow-hidden">
+      {/* Background ambient lighting effects */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-emerald-500/15 via-teal-500/5 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute inset-0 stadium-grid pointer-events-none opacity-50" />
+      <div className="absolute top-1/3 -left-32 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 -right-32 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="flex-1 max-w-360 w-full mx-auto px-4 sm:px-8 py-6 sm:py-8 relative z-10">
+        <div className="lg:col-span-8 bg-[#071326]/85 backdrop-blur-2xl rounded-3xl border border-slate-700/60 p-4 sm:p-8 flex flex-col items-center justify-center shadow-[0_25px_70px_rgba(0,0,0,0.7)] relative overflow-hidden">
+          {/* Card inner atmospheric glows */}
+          <div className="absolute -top-20 -left-20 w-56 h-56 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-20 -right-20 w-56 h-56 bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+          {/* Stand Details / Active Zone Header */}
+          <div className="w-full p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-slate-700/80 flex flex-wrap items-center justify-between gap-4 shadow-xl backdrop-blur-md relative z-10">
             {activeZone ? (
               <>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center font-bold text-blue-400 text-lg">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500/20 to-emerald-500/20 border border-blue-400/40 flex items-center justify-center font-black text-blue-400 text-xl shadow-inner">
                     {activeZone.id}
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-lg text-white uppercase">
+                    <div className="flex items-center gap-2.5">
+                      <span className="font-extrabold text-lg text-white uppercase tracking-wide">
                         {activeZone.name}
                       </span>
                       {getStatusBadge(activeZone)}
                     </div>
-                    <div className="text-xs text-slate-400 flex items-center gap-3 mt-0.5">
-                      <span>Floor {activeZone.floor}</span>
+                    <div className="text-xs text-slate-400 flex items-center gap-3 mt-1">
+                      <span className="font-semibold text-slate-300">
+                        Floor {activeZone.floor}
+                      </span>
                       <span>•</span>
                       <span>
-                        {activeZone.available} seats remaining (Cap:{" "}
-                        {activeZone.capacity})
+                        <strong className="text-slate-200">
+                          {activeZone.available}
+                        </strong>{" "}
+                        seats remaining (Cap: {activeZone.capacity})
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="text-right mr-2">
+                <div className="flex items-center gap-4">
+                  <div className="text-right mr-1">
                     <span className="text-[10px] uppercase tracking-wider text-slate-400 block font-bold">
                       Ticket Price
                     </span>
-                    <span className="text-2xl font-bold text-emerald-400">
+                    <span className="text-2xl sm:text-3xl font-black text-emerald-400">
                       ${activeZone.price}
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setShowTicketModal(true)}
-                    className="px-3.5 py-2 rounded-xl bg-red-600/20 hover:bg-red-600 text-red-300 hover:text-white border border-red-500/40 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md"
+                    className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-600/30 to-red-600/20 hover:from-red-600 hover:to-red-500 text-red-300 hover:text-white border border-red-500/50 text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-red-600/30 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
                   >
-                    <span>🎟️ Show Ticket</span>
+                    <span>Show Ticket</span>
                   </button>
                 </div>
               </>
             ) : (
-              <div className="w-full text-center py-1 text-slate-400 text-sm flex items-center justify-center gap-2">
+              <div className="w-full text-center py-2 text-slate-300 text-sm flex items-center justify-center gap-2 font-medium">
+                <span className="inline-block animate-bounce text-base">
+                  👇
+                </span>
                 <span>
-                  Click any stadium stand on the map to view zone details & show
-                  match ticket
+                  Click any stadium stand on the interactive 3D map to view zone
+                  details & reserve tickets
                 </span>
               </div>
             )}
@@ -2035,7 +2054,10 @@ export default function HomePage() {
                 {/* All Reserved Ticket Passes Display */}
                 <div className="space-y-4 max-h-[500px] overflow-y-auto no-scrollbar pr-1">
                   {Array.from({ length: quantity }).map((_, idx) => (
-                    <div key={idx} className="overflow-x-auto no-scrollbar py-1 space-y-1.5">
+                    <div
+                      key={idx}
+                      className="overflow-x-auto no-scrollbar py-1 space-y-1.5"
+                    >
                       {quantity > 1 && (
                         <div className="flex items-center justify-between px-2 text-xs text-slate-400">
                           <span className="font-bold text-white uppercase flex items-center gap-1.5">

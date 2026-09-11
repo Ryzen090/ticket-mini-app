@@ -270,6 +270,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
         priceUsd={zone.price}
         totalQuantity={quantity}
         initialGroupMode={groupQrMode}
+        initialTicketIndex={currentTicketIndex}
       />
     </>
   );

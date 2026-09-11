@@ -31,7 +31,6 @@ export interface CPLTicketProps {
   onQrClick?: () => void;
 }
 
-// Convert western digits to Khmer numerals
 export function toKhmerDigits(num: number | string): string {
   const khmerDigits = ["០", "១", "២", "៣", "៤", "៥", "៦", "៧", "៨", "៩"];
   return num
@@ -52,19 +51,11 @@ export function formatRiel(rielAmount: number): {
 
 export const CPLMatchTicket: React.FC<CPLTicketProps> = ({
   zoneId = "A1",
-  zoneName = "Cat A Stand",
   priceUsd = 1.5,
   priceRiel,
   category,
   matchTitleKhmer = "ជម្រើសជើងឯកខេមបូឌានព្រីមៀរលីក ឆ្នាំ២០២៦/២៧",
   matchTitleEn = "CAMBODIAN PREMIER LEAGUE 2026/27",
-  date = "18 / OCT / 2026",
-  time = "18:00 PM",
-  stadiumKhmer = "ពហុកីឡដ្ឋានជាតិអូឡាំពិក",
-  stadiumEn = "NATIONAL OLYMPIC STADIUM",
-  gate = "GATE 04",
-  seat = "S-18",
-  stand,
   ticketNumber = "CPL-2026-884920",
   cplLogoUrl = DEFAULT_CPL_LOGO,
   clubLogoUrl = DEFAULT_CLUB_LOGO,
@@ -72,7 +63,6 @@ export const CPLMatchTicket: React.FC<CPLTicketProps> = ({
   className = "",
   onQrClick,
 }) => {
-  // Determine category string
   const resolvedCategory =
     category ||
     (zoneId.startsWith("B")
@@ -81,11 +71,9 @@ export const CPLMatchTicket: React.FC<CPLTicketProps> = ({
         ? "CAT C"
         : "CAT A");
 
-  // Determine Riel price
   const calculatedRiel =
     priceRiel ?? (priceUsd ? Math.round(priceUsd * 4000) : 6000);
   const { khmerFormatted, engFormatted } = formatRiel(calculatedRiel);
-  const resolvedStand = stand || zoneId;
 
   const isDark = theme === "crimson";
 
@@ -96,7 +84,6 @@ export const CPLMatchTicket: React.FC<CPLTicketProps> = ({
         fontFamily: "'Kantumruy Pro', 'Outfit', sans-serif",
       }}
     >
-      {/* Outer Ticket Shell with Drop Shadow */}
       <div
         className={`relative w-full max-w-[960px] mx-auto rounded-2xl overflow-hidden shadow-2xl flex flex-row  ${
           isDark
@@ -110,7 +97,6 @@ export const CPLMatchTicket: React.FC<CPLTicketProps> = ({
             : "linear-gradient(135deg, #ffffff 0%, #f3f4f6 35%, #ffffff 70%, #eceef2 100%)",
         }}
       >
-        {/* Dynamic Curved Red / Crimson Light Slices (Matches Reference Design) */}
         {isDark ? (
           <>
             <div
@@ -505,9 +491,6 @@ export const CPLMatchTicket: React.FC<CPLTicketProps> = ({
   );
 };
 
-// ================= SUB-COMPONENTS & SVG ASSETS =================
-
-// Authentic CPL Logo
 export function CPLLogo({
   logoUrl = DEFAULT_CPL_LOGO,
   isDark = true,
@@ -520,7 +503,7 @@ export function CPLLogo({
   return (
     <div className="flex flex-col items-center select-none">
       {!hasError && logoUrl ? (
-        <div className="relative w-14 h-12 sm:w-16 sm:h-14 flex items-center justify-center p-0.5">
+        <div className="relative w-14 h-12 sm:w-20 sm:h-20 flex items-center justify-center p-0.5">
           <img
             src={logoUrl}
             alt="Cambodian Premier League"
@@ -545,22 +528,6 @@ export function CPLLogo({
           </svg>
         </div>
       )}
-      <div className="text-center mt-0.5 leading-none">
-        <span
-          className={`block text-[8px] sm:text-[9px] font-extrabold uppercase tracking-tight ${
-            isDark ? "text-white" : "text-slate-900"
-          }`}
-        >
-          Cambodian
-        </span>
-        <span
-          className={`block text-[7px] sm:text-[8px] font-bold uppercase tracking-widest ${
-            isDark ? "text-red-200" : "text-red-700"
-          }`}
-        >
-          Premier League
-        </span>
-      </div>
     </div>
   );
 }
