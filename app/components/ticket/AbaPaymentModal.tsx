@@ -190,10 +190,11 @@ export const AbaPaymentModal: React.FC<AbaPaymentModalProps> = ({
             </div>
             <div>
               <h2 className="text-white font-bold text-lg leading-tight">
-                Checkout
+                ABA PayWay (Scan to Pay)
               </h2>
               <p className="text-gray-400 text-xs">
-                {zoneName} • {quantity} Ticket{quantity > 1 ? "s" : ""}
+                {zoneName} • {quantity} Ticket{quantity > 1 ? "s" : ""} • $
+                {amountUsd.toFixed(2)}
               </p>
             </div>
           </div>
