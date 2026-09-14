@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Keyboard, A11y } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { SVGQRCode } from "./CPLMatchTicket";
+import { GET_PAYMENT_STATUS } from "@/app/service/payment";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -11,6 +12,7 @@ export interface LargeQRModalProps {
   isOpen: boolean;
   onClose: () => void;
   ticketNumber?: string;
+  batchOrder?: string;
   zoneId: string;
   zoneName?: string;
   gate?: string;
@@ -26,11 +28,14 @@ export interface LargeQRModalProps {
   totalQuantity?: number;
   initialGroupMode?: boolean;
   initialTicketIndex?: number;
+  onScanSuccess?: () => void;
 }
 
 export const LargeQRModal: React.FC<LargeQRModalProps> = ({
   isOpen,
   onClose,
+  ticketNumber,
+  batchOrder,
   zoneId,
   zoneName = "Zone Stand",
   gate = "GATE 04",
@@ -38,11 +43,13 @@ export const LargeQRModal: React.FC<LargeQRModalProps> = ({
   totalQuantity = 1,
   initialGroupMode = false,
   initialTicketIndex = 0,
+  onScanSuccess,
 }) => {
   const [copied, setCopied] = useState<boolean>(false);
   const [isGroupMode, setIsGroupMode] = useState<boolean>(initialGroupMode);
   const [activeTicketIndex, setActiveTicketIndex] =
     useState<number>(initialTicketIndex);
+  const [scannedStatus, setScannedStatus] = useState<string | null>(null);
   const swiperRef = useRef<SwiperType | null>(null);
 
   useEffect(() => {
@@ -54,6 +61,7 @@ export const LargeQRModal: React.FC<LargeQRModalProps> = ({
       );
       setActiveTicketIndex(safeIndex);
       setCopied(false);
+      setScannedStatus(null);
 
       setTimeout(() => {
         if (swiperRef.current && !swiperRef.current.destroyed) {
@@ -63,30 +71,82 @@ export const LargeQRModal: React.FC<LargeQRModalProps> = ({
     }
   }, [isOpen, initialGroupMode, initialTicketIndex, totalQuantity]);
 
+  // Real-time scan check polling while QR is open
+  useEffect(() => {
+    if (!isOpen) return;
+    const orderToPoll = batchOrder || ticketNumber;
+    if (!orderToPoll) return;
+
+    let isMounted = true;
+    const pollInterval = setInterval(async () => {
+      try {
+        const res = await GET_PAYMENT_STATUS(orderToPoll);
+        const rawData = res?.data?.data || res?.data;
+        const status = Array.isArray(rawData)
+          ? rawData[0]?.status?.toUpperCase()
+          : rawData?.status?.toUpperCase();
+
+        if (
+          status === "REDEEMED" ||
+          status === "USED" ||
+          status === "SCANNED"
+        ) {
+          if (isMounted) {
+            setScannedStatus(status);
+            if (onScanSuccess) {
+              onScanSuccess();
+            }
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("reload-tickets"));
+            }
+          }
+        }
+      } catch (err) {
+        // silently fallback
+      }
+    }, 2000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(pollInterval);
+    };
+  }, [isOpen, batchOrder, ticketNumber, onScanSuccess]);
+
   if (!isOpen) return null;
 
   // Generate list of all individual tickets
   const totalCount = Math.max(1, totalQuantity);
   const allTickets = Array.from({ length: totalCount }).map((_, idx) => {
     const itemSeat = `S-${14 + idx * 2}`;
-    const itemTicketNum = `CPL-2026-${(884920 + idx * 137).toString()}`;
+    const baseNum = batchOrder || ticketNumber;
+    const itemTicketNum = baseNum
+      ? totalCount > 1 && !baseNum.endsWith(`-${idx + 1}`)
+        ? `${baseNum}-${idx + 1}`
+        : baseNum
+      : `CPL-2026-${(884920 + idx * 137).toString()}`;
     return {
       index: idx,
       seat: itemSeat,
       ticketNum: itemTicketNum,
-      qrValue: `TICKET:${itemTicketNum}:${category}:${zoneId}:${itemSeat}`,
+      qrValue:
+        baseNum || `TICKET:${itemTicketNum}:${category}:${zoneId}:${itemSeat}`,
     };
   });
 
   const currentTicket = allTickets[activeTicketIndex] || allTickets[0];
   const groupSeatList = allTickets.map((t) => t.seat);
-  const groupPassId = `CPL-GROUP-${totalQuantity}X-${zoneId}-884920`;
-  const groupQrValue = `GROUP_PASS:CPL2026:${totalQuantity}_PERSONS:${zoneId}:${category}:${groupSeatList.join(",")}:${groupPassId}`;
+  const groupPassId =
+    batchOrder || `CPL-GROUP-${totalQuantity}X-${zoneId}-884920`;
+  const groupQrValue =
+    batchOrder ||
+    `GROUP_PASS:CPL2026:${totalQuantity}_PERSONS:${zoneId}:${category}:${groupSeatList.join(",")}:${groupPassId}`;
 
-  const displayedPassId = isGroupMode ? groupPassId : currentTicket.ticketNum;
-  const displayedSeat = isGroupMode
-    ? `${groupSeatList[0]} → ${groupSeatList[groupSeatList.length - 1]}`
-    : currentTicket.seat;
+  // Fixed: Dynamically updates to match the swiped ticket's number or group pass ID
+  const displayedPassId = isGroupMode
+    ? groupPassId
+    : totalQuantity > 1
+      ? currentTicket.ticketNum
+      : ticketNumber || currentTicket.ticketNum;
 
   const handleCopyPassId = () => {
     navigator.clipboard?.writeText(displayedPassId);
@@ -119,8 +179,8 @@ export const LargeQRModal: React.FC<LargeQRModalProps> = ({
             </div>
             <p className="text-xs text-slate-400">
               {isGroupMode
-                ? `1-Scan for ${totalQuantity} Fans • ${gate} • Stand ${zoneId}`
-                : `Stand ${zoneId} (${zoneName}) • ${gate} • Seat ${displayedSeat}`}
+                ? `Scan for ${totalQuantity}`
+                : `Stand (${zoneName})`}
             </p>
           </div>
 
@@ -227,18 +287,6 @@ export const LargeQRModal: React.FC<LargeQRModalProps> = ({
                           value={t.qrValue}
                           className="w-full h-full"
                         />
-                      </div>
-
-                      <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-800">
-                        <span className="flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
-                          <span>
-                            PASS #{idx + 1} • {t.seat}
-                          </span>
-                        </span>
-                        <span className="font-mono text-slate-600">
-                          {t.ticketNum}
-                        </span>
                       </div>
                     </div>
                   </SwiperSlide>

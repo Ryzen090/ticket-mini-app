@@ -3,7 +3,7 @@ import { SVGQRCode } from "./CPLMatchTicket";
 import {
   CREATE_PAYMENT,
   GET_PAYMENT_STATUS,
-  UPDATE_PAYMENT_STATUS,
+  MARK_PAYMENT,
 } from "@/app/service/payment";
 
 export interface AbaPaymentModalProps {
@@ -142,6 +142,9 @@ export const AbaPaymentModal: React.FC<AbaPaymentModalProps> = ({
           clearInterval(pollInterval);
           setTimeout(() => {
             onPaymentSuccess();
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("reload-tickets"));
+            }
           }, 1200);
         }
       } catch {}
@@ -154,7 +157,10 @@ export const AbaPaymentModal: React.FC<AbaPaymentModalProps> = ({
     try {
       setIsSubmitting(true);
       if (activeOrderId) {
-        await UPDATE_PAYMENT_STATUS(activeOrderId, "COMPLETED");
+        await MARK_PAYMENT(activeOrderId, "COMPLETED");
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("reload-tickets"));
+        }
       }
     } catch (err) {
       console.warn("Update payment status error:", err);

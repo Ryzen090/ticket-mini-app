@@ -81,8 +81,11 @@ export default function HomePage() {
   }, []);
 
   const activeZone = tickets.find((z) => z.id === selectedSection);
+
   const isAvailable = activeZone
-    ? activeZone.status === TicketStatus.Available || activeZone.status === 2
+    ? (activeZone.status === TicketStatus.Available ||
+        activeZone.status === 2) &&
+      activeZone.available > 0
     : false;
 
   const handlePointerOver = (e: React.PointerEvent<SVGSVGElement>) => {
@@ -113,32 +116,6 @@ export default function HomePage() {
     }
   };
 
-  const getStatusBadge = (zone: Zone) => {
-    const isAvail = zone.status === TicketStatus.Available || zone.status === 2;
-    if (!isAvail || zone.available === 0) {
-      return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-rose-500/20 text-rose-400 border border-rose-500/30">
-          <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
-          Sold Out
-        </span>
-      );
-    }
-    if (zone.available < 50) {
-      return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-          Limited
-        </span>
-      );
-    }
-    return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-        Available
-      </span>
-    );
-  };
-
   const handleBookTickets = () => {
     if (!activeZone || !isAvailable) return;
     setShowAbaModal(true);
@@ -153,70 +130,24 @@ export default function HomePage() {
       <div className="absolute top-1/2 -right-32 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="flex-1 max-w-360 w-full mx-auto px-4 sm:px-8 py-6 sm:py-8 relative z-10">
-        <div className="lg:col-span-8 bg-[#071326]/85 backdrop-blur-2xl rounded-3xl border border-slate-700/60 p-4 sm:p-8 flex flex-col items-center justify-center shadow-[0_25px_70px_rgba(0,0,0,0.7)] relative overflow-hidden">
-          {/* Card inner atmospheric glows */}
-          <div className="absolute -top-20 -left-20 w-56 h-56 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -top-20 -right-20 w-56 h-56 bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="lg:col-span-8 bg-zinc-900/85 backdrop-blur-2xl rounded-3xl border border-zinc-800 p-4 sm:p-8 flex flex-col items-center justify-center shadow-[0_25px_70px_rgba(0,0,0,0.7)] relative overflow-hidden">
+          <div className="absolute -top-20 -left-20 w-56 h-56 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-20 -right-20 w-56 h-56 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          {/* Stand Details / Active Zone Header */}
-          <div className="w-full p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-slate-700/80 flex flex-wrap items-center justify-between gap-4 shadow-xl backdrop-blur-md relative z-10">
-            {activeZone ? (
-              <>
-                <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500/20 to-emerald-500/20 border border-blue-400/40 flex items-center justify-center font-black text-blue-400 text-xl shadow-inner">
-                    {activeZone.id}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2.5">
-                      <span className="font-extrabold text-lg text-white uppercase tracking-wide">
-                        {activeZone.name}
-                      </span>
-                      {getStatusBadge(activeZone)}
-                    </div>
-                    <div className="text-xs text-slate-400 flex items-center gap-3 mt-1">
-                      <span className="font-semibold text-slate-300">
-                        Floor {activeZone.floor}
-                      </span>
-                      <span>•</span>
-                      <span>
-                        <strong className="text-slate-200">
-                          {activeZone.available}
-                        </strong>{" "}
-                        seats remaining (Cap: {activeZone.capacity})
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="text-right mr-1">
-                    <span className="text-[10px] uppercase tracking-wider text-slate-400 block font-bold">
-                      Ticket Price
-                    </span>
-                    <span className="text-2xl sm:text-3xl font-black text-emerald-400">
-                      ${activeZone.price}
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowTicketModal(true)}
-                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white border border-red-500/40 text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-lg shadow-red-950/50 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
-                  >
-                    Show Ticket
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="w-full text-center py-2 text-slate-300 text-sm flex items-center justify-center font-medium tracking-wide">
-                <span>
-                  Select any stadium stand on the interactive map to view zone
-                  details and reserve tickets
-                </span>
-              </div>
-            )}
+          <div className="w-full flex items-center justify-between mb-6 pb-4 border-b border-zinc-800">
+            <div>
+              <h2 className="text-lg sm:text-xl font-extrabold text-white uppercase tracking-wider">
+                Stadium Seating Map
+              </h2>
+              <p className="text-xs text-zinc-400">
+                Click a stand to select your category and seats
+              </p>
+            </div>
+            <div className="flex items-center gap-2 text-xs font-mono bg-zinc-950 px-3 py-1.5 rounded-xl border border-zinc-800 text-zinc-300">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Live Availability
+            </div>
           </div>
-
           <svg
             xmlns="https://www.w3.org/2000/svg"
             version="1.1"
@@ -252,7 +183,9 @@ export default function HomePage() {
               };
               const zone = tickets.find((t) => t.id === sectionId);
               const isOut = zone
-                ? zone.status === TicketStatus.Out || zone.status === 1
+                ? zone.status === TicketStatus.Out ||
+                  zone.status === 1 ||
+                  zone.available <= 0
                 : false;
 
               if (isOut) {
@@ -1861,6 +1794,7 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Checkout Modal */}
       {showCheckoutModal && activeZone && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto no-scrollbar animate-in fade-in duration-200">
           <div
@@ -1868,32 +1802,27 @@ export default function HomePage() {
             onClick={() => setShowCheckoutModal(false)}
           />
 
-          <div className="relative z-10 max-w-4xl w-full bg-[#071326] border border-slate-700/80 rounded-3xl p-5 sm:p-8 shadow-2xl space-y-6 text-white my-auto overflow-hidden">
-            {/* Glow ambient effects behind modal */}
-            <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative z-10 max-w-4xl w-full bg-zinc-900 border border-zinc-800 rounded-3xl p-5 sm:p-8 shadow-2xl space-y-6 text-white my-auto overflow-hidden">
+            <div className="absolute top-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
 
             {/* Dialog Header */}
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4 relative z-10">
-              <div className="flex items-center gap-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-xl sm:text-2xl font-bold uppercase tracking-wide text-white">
-                      Ticket Checkout
-                    </h2>
-                  </div>
-                  <p className="text-xs text-slate-400">
-                    Stand {activeZone.id} • {activeZone.name} • Floor{" "}
-                    {activeZone.floor} • ({activeZone.available} seats
-                    remaining)
-                  </p>
-                </div>
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-4 relative z-10">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold uppercase tracking-wide text-white">
+                  Ticket Checkout
+                </h2>
+                <p className="text-xs text-zinc-400">
+                  Stand {activeZone.id} &bull; {activeZone.name} &bull; Floor{" "}
+                  {activeZone.floor} &bull; ({activeZone.available} seats
+                  remaining)
+                </p>
               </div>
 
               <button
                 type="button"
                 onClick={() => setShowCheckoutModal(false)}
-                className="w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors border border-slate-700 cursor-pointer"
+                className="w-9 h-9 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white flex items-center justify-center transition-colors border border-zinc-700 cursor-pointer"
                 aria-label="Close"
               >
                 <svg
@@ -1914,7 +1843,6 @@ export default function HomePage() {
 
             {!bookingSuccess ? (
               <>
-                {/* Official Matchday Ticket Presentation */}
                 <div className="overflow-x-auto no-scrollbar relative z-10">
                   <div className="min-w-[620px] max-w-[860px] mx-auto">
                     <CPLMatchTicket
@@ -1937,7 +1865,6 @@ export default function HomePage() {
 
                 {isAvailable ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 relative z-10">
-                    {/* Quantity Selector */}
                     {(() => {
                       const maxAvailable = Math.max(
                         1,
@@ -1951,17 +1878,17 @@ export default function HomePage() {
                       );
 
                       return (
-                        <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
+                        <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-3">
                           <div className="flex justify-between items-center">
-                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400">
                               Select Ticket Quantity
                             </label>
-                            <span className="text-[10px] text-slate-400">
+                            <span className="text-[10px] text-zinc-400 font-mono">
                               Max: {maxAvailable}
                             </span>
                           </div>
 
-                          <div className="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800">
+                          <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-900 border border-zinc-800">
                             <button
                               type="button"
                               onClick={(e) => {
@@ -1971,15 +1898,15 @@ export default function HomePage() {
                                   Math.max(1, (Number(q) || 1) - 1),
                                 );
                               }}
-                              className="w-11 h-11 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-bold flex items-center justify-center transition-all text-xl cursor-pointer select-none shadow"
+                              className="w-11 h-11 rounded-xl bg-zinc-800 hover:bg-zinc-700 active:scale-95 text-white font-bold flex items-center justify-center transition-all text-xl cursor-pointer select-none shadow"
                             >
-                              −
+                              &minus;
                             </button>
                             <div className="text-center px-4">
                               <span className="text-2xl font-black text-white block">
                                 {quantity}
                               </span>
-                              <span className="text-[10px] text-slate-400 block uppercase font-bold">
+                              <span className="text-[10px] text-zinc-400 block uppercase font-bold">
                                 {quantity === 1 ? "Ticket" : "Tickets"}
                               </span>
                             </div>
@@ -1992,7 +1919,7 @@ export default function HomePage() {
                                   Math.min(maxAvailable, (Number(q) || 1) + 1),
                                 );
                               }}
-                              className="w-11 h-11 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-bold flex items-center justify-center transition-all text-xl cursor-pointer select-none shadow"
+                              className="w-11 h-11 rounded-xl bg-zinc-800 hover:bg-zinc-700 active:scale-95 text-white font-bold flex items-center justify-center transition-all text-xl cursor-pointer select-none shadow"
                             >
                               +
                             </button>
@@ -2002,52 +1929,45 @@ export default function HomePage() {
                     })()}
 
                     {/* Pricing Summary & Checkout Button */}
-                    <div className="relative w-full overflow-hidden rounded-3xl bg-slate-900/60 p-6 backdrop-blur-xl border border-white/10 shadow-2xl">
-                      {/* Subtle background glow effect */}
-                      <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"></div>
-
-                      {/* Header */}
-                      <div className="mb-5 flex items-center gap-2 text-sm font-medium text-slate-200">
+                    <div className="relative w-full overflow-hidden rounded-3xl bg-zinc-950 p-6 backdrop-blur-xl border border-zinc-800 shadow-2xl">
+                      <div className="mb-5 flex items-center gap-2 text-sm font-medium text-zinc-200">
                         Order Summary
                       </div>
 
                       <div className="space-y-3.5">
-                        {/* Line Items */}
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-slate-400">
+                          <span className="text-zinc-400">
                             Price per Ticket
                           </span>
-                          <div className="text-right">
-                            <span className="font-semibold text-slate-100">
+                          <div className="text-right font-mono">
+                            <span className="font-semibold text-zinc-100">
                               ${activeZone.price}
                             </span>
-                            <span className="ml-1 text-xs text-slate-500">
+                            <span className="ml-1 text-xs text-zinc-500">
                               ({(activeZone.price * 4000).toLocaleString()} ៛)
                             </span>
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-slate-400">Quantity</span>
-                          <span className="flex h-6 min-w-[24px] items-center justify-center rounded-md bg-white/10 px-2 text-xs font-bold text-white">
+                        <div className="flex items-center justify-between text-sm font-mono">
+                          <span className="text-zinc-400">Quantity</span>
+                          <span className="flex h-6 min-w-[24px] items-center justify-center rounded-md bg-zinc-800 px-2 text-xs font-bold text-white">
                             {quantity}
                           </span>
                         </div>
 
-                        {/* Divider */}
-                        <div className="my-4 h-px w-full bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+                        <div className="my-4 h-px w-full bg-gradient-to-r from-transparent via-zinc-800 to-transparent"></div>
 
-                        {/* Total Section */}
-                        <div className="mb-6 flex items-end justify-between">
+                        <div className="mb-6 flex items-end justify-between font-mono">
                           <div>
-                            <p className="mb-1 text-xs font-medium uppercase tracking-wider text-slate-500">
+                            <p className="mb-1 text-xs font-medium uppercase tracking-wider text-zinc-500">
                               Total Due
                             </p>
-                            <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+                            <p className="text-3xl font-extrabold text-white">
                               ${(activeZone.price * quantity).toFixed(2)}
                             </p>
                           </div>
-                          <div className="text-right text-sm font-medium text-emerald-400/80">
+                          <div className="text-right text-sm font-medium text-emerald-400">
                             {(
                               activeZone.price *
                               quantity *
@@ -2060,38 +1980,10 @@ export default function HomePage() {
                         <button
                           type="button"
                           onClick={handleBookTickets}
-                          className="group relative flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-500 py-4 text-sm font-bold text-slate-950 transition-all duration-300 hover:bg-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] active:scale-[0.98]"
+                          className="group relative flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-4 text-sm font-bold text-zinc-950 transition-all duration-300 hover:bg-emerald-500 cursor-pointer active:scale-[0.98]"
                         >
                           <span>Pay Now</span>
-                          <svg
-                            className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M14 5l7 7m0 0l-7 7m7-7H3"
-                            />
-                          </svg>
                         </button>
-
-                        <div className="mt-4 flex items-center justify-center gap-1.5 text-[11px] font-medium text-slate-500">
-                          <svg
-                            className="h-3.5 w-3.5 text-emerald-500/70"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                          </svg>
-                          <span>Secured via ABA Pay</span>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -2100,16 +1992,14 @@ export default function HomePage() {
                     <span className="font-bold text-rose-400 text-lg uppercase block">
                       This Zone is Sold Out
                     </span>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-zinc-400">
                       Please choose another stand on the map.
                     </p>
                   </div>
                 )}
               </>
             ) : (
-              /* Reservation Confirmation State */
               <div className="space-y-5 relative z-10">
-                {/* All Reserved Ticket Passes Display */}
                 <div className="space-y-4 max-h-[500px] overflow-y-auto no-scrollbar pr-1">
                   {Array.from({ length: quantity }).map((_, idx) => (
                     <div
@@ -2117,18 +2007,13 @@ export default function HomePage() {
                       className="overflow-x-auto no-scrollbar py-1 space-y-1.5"
                     >
                       {quantity > 1 && (
-                        <div className="flex items-center justify-between px-2 text-xs text-slate-400">
+                        <div className="flex items-center justify-between px-2 text-xs text-zinc-400 font-mono">
                           <span className="font-bold text-white uppercase flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
                             Ticket #{idx + 1} of {quantity}
                           </span>
-                          <span className="text-[11px] font-mono text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                            Seat: S-{14 + idx * 2} • GATE{" "}
-                            {activeZone.id.startsWith("A")
-                              ? "02"
-                              : activeZone.id.startsWith("B")
-                                ? "04"
-                                : "06"}
+                          <span className="text-[11px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                            Seat: S-{14 + idx * 2}
                           </span>
                         </div>
                       )}
@@ -2145,13 +2030,6 @@ export default function HomePage() {
                                 : "CAT C"
                           }
                           stand={`Stand ${activeZone.id}`}
-                          gate={
-                            activeZone.id.startsWith("A")
-                              ? "GATE 02"
-                              : activeZone.id.startsWith("B")
-                                ? "GATE 04"
-                                : "GATE 06"
-                          }
                           seat={`S-${14 + idx * 2}`}
                           ticketNumber={`CPL-2026-${(884920 + idx * 137).toString()}`}
                           theme="crimson"
@@ -2168,7 +2046,7 @@ export default function HomePage() {
                       setShowCheckoutModal(false);
                       setBookingSuccess(false);
                     }}
-                    className="px-6 py-2.5 rounded-xl bg-linear-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold uppercase text-xs tracking-wider transition-all"
+                    className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold uppercase text-xs tracking-wider transition-all cursor-pointer"
                   >
                     Done & Close
                   </button>

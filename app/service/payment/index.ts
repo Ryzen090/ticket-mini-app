@@ -41,11 +41,11 @@ export const GET_PAYMENTS = async (): Promise<any> => {
   return FETCH_API(`${EndPoints.payment}`);
 };
 
-export const UPDATE_PAYMENT_STATUS = async (
+export const MARK_PAYMENT = async (
   order: string,
-  status: "PENDING" | "COMPLETED" | "FAILED" | "EXPIRED" = "COMPLETED",
+  status: "PENDING" | "COMPLETED" | "FAILED" | "REDEEMED" = "COMPLETED",
 ): Promise<any> => {
-  return FETCH_API(`${EndPoints.payment}/${order}`, {
+  return FETCH_API(`${EndPoints.payment}/mark-payment/${order}`, {
     method: "PATCH",
     body: JSON.stringify({ status }),
   });

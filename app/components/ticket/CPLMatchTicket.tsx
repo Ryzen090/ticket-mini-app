@@ -603,7 +603,6 @@ export function CPLShieldCrest({
   );
 }
 
-// Real Camera-Scannable Vector QR Code Generator
 export function SVGQRCode({
   value,
   className = "w-10 h-10 sm:w-14 sm:h-14",
